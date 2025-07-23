@@ -19,6 +19,7 @@ const TranscriptionList = ({ fileIds = [] }) => {
   const [transcriptions, setTranscriptions] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [pollingInterval, setPollingInterval] = useState(null)
 
   const fetchTranscriptions = async () => {
     setLoading(true)
@@ -27,17 +28,47 @@ const TranscriptionList = ({ fileIds = [] }) => {
     try {
       const transcriptionPromises = fileIds.map(async (fileId) => {
         try {
-          const response = await axios.get(`http://25.51.135.130:8001/transcribe/result/${fileId}`)
-          return {
-            fileId,
-            ...response.data,
-            status: 'success',
+          // First check the status
+          const statusResponse = await axios.get(
+            `http://25.51.135.130:8001/transcribe/status/${fileId}`,
+          )
+          const transcriptionStatus = statusResponse.data.state
+
+          if (transcriptionStatus === 'DONE') {
+            // Only fetch results if transcription is done
+            try {
+              const resultResponse = await axios.get(
+                `http://25.51.135.130:8001/transcribe/result/${fileId}`,
+              )
+              return {
+                fileId,
+                ...resultResponse.data,
+                status: 'success',
+                transcriptionStatus: 'DONE',
+              }
+            } catch (resultError) {
+              return {
+                fileId,
+                status: 'error',
+                transcriptionStatus: 'DONE',
+                error: 'Error al obtener el resultado de la transcripción',
+              }
+            }
+          } else {
+            // Return status info for RUNNING, ERROR, etc.
+            return {
+              fileId,
+              status: transcriptionStatus === 'ERROR' ? 'error' : 'running',
+              transcriptionStatus,
+              error: transcriptionStatus === 'ERROR' ? 'Error en la transcripción' : null,
+            }
           }
-        } catch (error) {
+        } catch (statusError) {
           return {
             fileId,
             status: 'error',
-            error: error.message,
+            transcriptionStatus: 'UNKNOWN',
+            error: 'Error al verificar el estado de la transcripción',
           }
         }
       })
@@ -55,9 +86,39 @@ const TranscriptionList = ({ fileIds = [] }) => {
   useEffect(() => {
     if (fileIds.length > 0) {
       fetchTranscriptions()
+
+      // Set up polling to refresh transcriptions every 10 seconds
+      // Only poll if there are running transcriptions
+      const interval = setInterval(() => {
+        fetchTranscriptions()
+      }, 10000)
+
+      setPollingInterval(interval)
+
+      return () => {
+        if (interval) {
+          clearInterval(interval)
+        }
+      }
+    } else {
+      // Clear polling when no fileIds
+      if (pollingInterval) {
+        clearInterval(pollingInterval)
+        setPollingInterval(null)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileIds])
+
+  // Stop polling when all transcriptions are complete or have errors
+  useEffect(() => {
+    const hasRunningTranscriptions = transcriptions.some((t) => t.status === 'running')
+
+    if (!hasRunningTranscriptions && pollingInterval) {
+      clearInterval(pollingInterval)
+      setPollingInterval(null)
+    }
+  }, [transcriptions, pollingInterval])
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
@@ -150,6 +211,8 @@ const TranscriptionList = ({ fileIds = [] }) => {
                 <CTableDataCell>
                   {transcription.status === 'success' ? (
                     <span className="badge bg-success">Completado</span>
+                  ) : transcription.status === 'running' ? (
+                    <span className="badge bg-warning">Procesando...</span>
                   ) : (
                     <span className="badge bg-danger">Error</span>
                   )}
