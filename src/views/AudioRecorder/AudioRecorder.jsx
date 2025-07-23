@@ -334,7 +334,9 @@ const AudioRecorder = () => {
                   {transcriptionResult.text && (
                     <div className="mb-3">
                       <h6>Texto Transcrito:</h6>
-                      <div className="p-3 bg-light rounded">{transcriptionResult.text}</div>
+                      <div className="p-3 bg-light rounded text-black">
+                        {transcriptionResult.text}
+                      </div>
                     </div>
                   )}
 
