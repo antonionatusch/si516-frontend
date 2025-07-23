@@ -82,6 +82,20 @@ const _nav = [
     ],
   },
 
+  // Recetas Médicas
+  {
+    component: CNavGroup,
+    name: 'Recetas Médicas',
+    icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Lista de Recetas',
+        to: '/prescription',
+      },
+    ],
+  },
+
   // Citas
   {
     component: CNavGroup,

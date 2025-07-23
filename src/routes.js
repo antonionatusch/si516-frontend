@@ -12,6 +12,10 @@ const PatientList = React.lazy(() => import('./views/Patient/PatientList'))
 const DoctorCreate = React.lazy(() => import('./views/Doctor/DoctorCreate'))
 const DoctorList = React.lazy(() => import('./views/Doctor/DoctorList'))
 
+// Prescription
+const PrescriptionList = React.lazy(() => import('./views/Prescription/PrescriptionList'))
+const PrescriptionDetails = React.lazy(() => import('./views/Prescription/PrescriptionDetails'))
+
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
@@ -90,6 +94,10 @@ const routes = [
   //Doctor
   { path: '/Doctores/registrar', name: 'Registrar Doctor', element: DoctorCreate },
   { path: '/Doctores/lista', name: 'Lista de Doctor', element: DoctorList },
+
+  // Prescription
+  { path: '/prescription', name: 'Lista de Recetas', element: PrescriptionList },
+  { path: '/prescription/details/:id', name: 'Detalles de Receta', element: PrescriptionDetails },
 
   //Citas
   { path: '/Appointments/nueva', name: 'Registrar Cita', element: AppointmentCreate },
