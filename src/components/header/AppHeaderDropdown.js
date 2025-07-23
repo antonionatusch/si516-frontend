@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   CAvatar,
   CBadge,
@@ -19,19 +20,44 @@ import {
   cilSettings,
   cilTask,
   cilUser,
+  cilAccountLogout,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
+import { getDoctorInfo, logout } from '../../services/auth'
 import avatar8 from './../../assets/images/avatars/profile.jpg'
 
 const AppHeaderDropdown = () => {
+  const navigate = useNavigate()
+  const doctorInfo = getDoctorInfo()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
         <CAvatar src={avatar8} size="md" />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
+        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">
+          {doctorInfo ? doctorInfo.fullName : 'Doctor Account'}
+        </CDropdownHeader>
+        {doctorInfo && (
+          <CDropdownItem href="#" disabled>
+            <CIcon icon={cilUser} className="me-2" />
+            {doctorInfo.username}
+          </CDropdownItem>
+        )}
+        {doctorInfo && (
+          <CDropdownItem href="#" disabled>
+            <CIcon icon={cilSettings} className="me-2" />
+            Office: {doctorInfo.officeId}
+          </CDropdownItem>
+        )}
+        <CDropdownDivider />
         <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates
@@ -84,9 +110,9 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem href="#">
-          <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+        <CDropdownItem as="button" onClick={handleLogout}>
+          <CIcon icon={cilAccountLogout} className="me-2" />
+          Logout
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

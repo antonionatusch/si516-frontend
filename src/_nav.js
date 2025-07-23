@@ -128,10 +128,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Audio',
     icon: <CIcon icon={cilMicrophone} customClassName="nav-icon" />,
-    items: [
-      { component: CNavItem, name: 'Grabar Resumen', to: '/audio/grabar' },
-      { component: CNavItem, name: 'Transcripciones', to: '/transcripcion' }, // tu vista actual
-    ],
+    items: [{ component: CNavItem, name: 'Grabar Resumen', to: '/audio/grabar' }],
   },
   {
     component: CNavItem,

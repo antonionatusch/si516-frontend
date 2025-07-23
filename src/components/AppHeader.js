@@ -27,10 +27,12 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import { getDoctorInfo } from '../services/auth'
 
 const AppHeader = () => {
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
+  const doctorInfo = getDoctorInfo()
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
@@ -61,6 +63,11 @@ const AppHeader = () => {
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
+          {doctorInfo && (
+            <CNavItem>
+              <span className="navbar-text me-3">Welcome, {doctorInfo.username}</span>
+            </CNavItem>
+          )}
           <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilBell} size="lg" />
