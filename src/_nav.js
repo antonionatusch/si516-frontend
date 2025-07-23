@@ -60,7 +60,6 @@ const _nav = [
         name: 'Registrar Paciente',
         to: '/Patient/registrar',
       },
-
     ],
   },
 
@@ -92,12 +91,12 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Ver Citas',
-        to: '/Appointments/lista'
+        to: '/Appointments/lista',
       },
       {
         component: CNavItem,
         name: 'Nueva Cita',
-        to: '/Appointments/nueva'
+        to: '/Appointments/nueva',
       },
     ],
   },
