@@ -91,7 +91,7 @@ const Register = () => {
       const registrationData = {
         username: formData.username,
         fullName: formData.fullName,
-        officeId: selectedOffice._id, // Use the found office ID
+        officeId: selectedOffice.id, // Use the found office ID
         password: formData.password,
       }
 
@@ -184,7 +184,7 @@ const Register = () => {
                         {loadingOffices ? 'Loading offices...' : 'Select Office'}
                       </option>
                       {offices.map((office) => (
-                        <option key={office._id} value={office.code}>
+                        <option key={office.id} value={office.code}>
                           {office.code}
                         </option>
                       ))}
