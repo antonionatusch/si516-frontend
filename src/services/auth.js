@@ -22,7 +22,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error)
-  }
+  },
 )
 
 // Add response interceptor to handle auth errors
@@ -35,7 +35,7 @@ api.interceptors.response.use(
       window.location.href = '/#/login'
     }
     return Promise.reject(error)
-  }
+  },
 )
 
 // Auth helper functions
@@ -62,9 +62,13 @@ export const authAPI = {
   register: (doctorData) => {
     return axios.post(`${API_BASE_URL}/auth/register`, doctorData)
   },
-  
+
   login: (credentials) => {
     return axios.post(`${API_BASE_URL}/auth/login`, credentials)
+  },
+
+  getOffices: () => {
+    return axios.get(`${API_BASE_URL}/offices`)
   },
 }
 

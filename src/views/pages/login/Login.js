@@ -53,14 +53,17 @@ const Login = () => {
 
       // Store JWT token and doctor information in localStorage
       const { token, doctorId, username, fullName, officeId } = response.data
-      
+
       localStorage.setItem('authToken', token)
-      localStorage.setItem('doctorInfo', JSON.stringify({
-        doctorId,
-        username,
-        fullName,
-        officeId,
-      }))
+      localStorage.setItem(
+        'doctorInfo',
+        JSON.stringify({
+          doctorId,
+          username,
+          fullName,
+          officeId,
+        }),
+      )
 
       // Navigate to dashboard
       navigate('/')
@@ -87,15 +90,15 @@ const Login = () => {
                   <CForm onSubmit={handleSubmit}>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your doctor account</p>
-                    
+
                     {error && <CAlert color="danger">{error}</CAlert>}
-                    
+
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput 
-                        placeholder="Username" 
+                      <CFormInput
+                        placeholder="Username"
                         autoComplete="username"
                         name="username"
                         value={formData.username}
@@ -137,8 +140,8 @@ const Login = () => {
                   <div>
                     <h2>Sign up</h2>
                     <p>
-                      Register as a doctor to access the SaludConecta system. Create your account to manage
-                      patient records, appointments, and clinical histories.
+                      Register as a doctor to access the SaludConecta system. Create your account to
+                      manage patient records, appointments, and clinical histories.
                     </p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>

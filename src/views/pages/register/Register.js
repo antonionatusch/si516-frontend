@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { authAPI } from '../../../services/auth'
 import {
   CButton,
@@ -8,6 +9,7 @@ import {
   CContainer,
   CForm,
   CFormInput,
+  CFormSelect,
   CInputGroup,
   CInputGroupText,
   CRow,
@@ -17,16 +19,36 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser, cilMedicalCross, cilBuilding } from '@coreui/icons'
 
 const Register = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: '',
     fullName: '',
-    officeId: '',
+    officeCode: '',
     password: '',
     repeatPassword: '',
   })
+  const [offices, setOffices] = useState([])
   const [loading, setLoading] = useState(false)
+  const [loadingOffices, setLoadingOffices] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  // Fetch offices on component mount
+  useEffect(() => {
+    const fetchOffices = async () => {
+      try {
+        const response = await authAPI.getOffices()
+        setOffices(response.data)
+      } catch (err) {
+        console.error('Error fetching offices:', err)
+        setError('Failed to load offices. Please try again.')
+      } finally {
+        setLoadingOffices(false)
+      }
+    }
+
+    fetchOffices()
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -41,7 +63,7 @@ const Register = () => {
     setSuccess('')
 
     // Basic validation
-    if (!formData.username || !formData.fullName || !formData.officeId || !formData.password) {
+    if (!formData.username || !formData.fullName || !formData.officeCode || !formData.password) {
       setError('All fields are required')
       return
     }
@@ -56,13 +78,20 @@ const Register = () => {
       return
     }
 
+    // Find office by code
+    const selectedOffice = offices.find((office) => office.code === formData.officeCode)
+    if (!selectedOffice) {
+      setError('Selected office not found')
+      return
+    }
+
     setLoading(true)
 
     try {
       const registrationData = {
         username: formData.username,
         fullName: formData.fullName,
-        officeId: formData.officeId,
+        officeId: selectedOffice._id, // Use the found office ID
         password: formData.password,
       }
 
@@ -71,7 +100,7 @@ const Register = () => {
       setFormData({
         username: '',
         fullName: '',
-        officeId: '',
+        officeCode: '',
         password: '',
         repeatPassword: '',
       })
@@ -99,16 +128,25 @@ const Register = () => {
                 <CForm onSubmit={handleSubmit}>
                   <h1>Register</h1>
                   <p className="text-body-secondary">Create your doctor account</p>
-                  
+
                   {error && <CAlert color="danger">{error}</CAlert>}
-                  {success && <CAlert color="success">{success}</CAlert>}
-                  
+                  {success && (
+                    <CAlert color="success">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span>{success}</span>
+                        <CButton color="primary" size="sm" onClick={() => navigate('/login')}>
+                          Go to Login
+                        </CButton>
+                      </div>
+                    </CAlert>
+                  )}
+
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
                       <CIcon icon={cilUser} />
                     </CInputGroupText>
-                    <CFormInput 
-                      placeholder="Username" 
+                    <CFormInput
+                      placeholder="Username"
                       autoComplete="username"
                       name="username"
                       value={formData.username}
@@ -116,13 +154,13 @@ const Register = () => {
                       required
                     />
                   </CInputGroup>
-                  
+
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
                       <CIcon icon={cilMedicalCross} />
                     </CInputGroupText>
-                    <CFormInput 
-                      placeholder="Full Name (e.g., Dr. John Doe)" 
+                    <CFormInput
+                      placeholder="Full Name (e.g., Dr. John Doe)"
                       autoComplete="name"
                       name="fullName"
                       value={formData.fullName}
@@ -130,20 +168,29 @@ const Register = () => {
                       required
                     />
                   </CInputGroup>
-                  
+
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
                       <CIcon icon={cilBuilding} />
                     </CInputGroupText>
-                    <CFormInput 
-                      placeholder="Office ID" 
-                      name="officeId"
-                      value={formData.officeId}
+                    <CFormSelect
+                      name="officeCode"
+                      value={formData.officeCode}
                       onChange={handleChange}
                       required
-                    />
+                      disabled={loadingOffices}
+                    >
+                      <option value="">
+                        {loadingOffices ? 'Loading offices...' : 'Select Office'}
+                      </option>
+                      {offices.map((office) => (
+                        <option key={office._id} value={office.code}>
+                          {office.code}
+                        </option>
+                      ))}
+                    </CFormSelect>
                   </CInputGroup>
-                  
+
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
@@ -158,7 +205,7 @@ const Register = () => {
                       required
                     />
                   </CInputGroup>
-                  
+
                   <CInputGroup className="mb-4">
                     <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
@@ -173,9 +220,9 @@ const Register = () => {
                       required
                     />
                   </CInputGroup>
-                  
+
                   <div className="d-grid">
-                    <CButton color="success" type="submit" disabled={loading}>
+                    <CButton color="success" type="submit" disabled={loading || loadingOffices}>
                       {loading ? 'Creating Account...' : 'Create Account'}
                     </CButton>
                   </div>
