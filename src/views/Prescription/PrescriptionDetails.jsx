@@ -71,7 +71,7 @@ const PrescriptionDetails = () => {
   useEffect(() => {
     fetchPrescriptionDetails()
   }, [id])
-
+  console.log(prescription)
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     try {
@@ -115,8 +115,6 @@ const PrescriptionDetails = () => {
         return 'NO ESPECIFICADO'
     }
   }
-
-  console.log('Prescription date:', prescription.createdAt)
 
   if (loading) return <div className="text-center">Cargando detalles...</div>
   if (error) return <div className="text-center text-danger">Error: {error}</div>
