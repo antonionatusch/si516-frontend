@@ -23,7 +23,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     username: '',
     fullName: '',
-    officeCode: '',
+    officeCode: '', // should be officeId that was fetched thanks to looking up the offices collection based on the provided code.
     password: '',
     repeatPassword: '',
   })
