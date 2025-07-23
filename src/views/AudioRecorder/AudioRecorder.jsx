@@ -33,8 +33,13 @@ const AudioRecorder = () => {
   const [transcriptionStatus, setTranscriptionStatus] = useState(null) // 'RUNNING', 'DONE', 'ERROR'
   const [currentFileId, setCurrentFileId] = useState(null)
   const [transcriptionResult, setTranscriptionResult] = useState(null)
-  const [sessionFileIds, setSessionFileIds] = useState([])
+  const [sessionFileIds, setSessionFileIds] = useState(() => {
+    // Initialize from localStorage if available
+    const saved = localStorage.getItem('sessionFileIds')
+    return saved ? JSON.parse(saved) : []
+  })
   const [pollingInterval, setPollingInterval] = useState(null)
+  const [listRefreshKey, setListRefreshKey] = useState(0)
 
   const navigate = useNavigate()
   const mediaRecorderRef = useRef(null)
@@ -59,6 +64,11 @@ const AudioRecorder = () => {
     }
   }, [pollingInterval])
 
+  // Save sessionFileIds to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('sessionFileIds', JSON.stringify(sessionFileIds))
+  }, [sessionFileIds])
+
   // Polling function for transcription status
   const pollTranscriptionStatus = async (fileId) => {
     try {
@@ -74,6 +84,8 @@ const AudioRecorder = () => {
           setPollingInterval(null)
         }
         await fetchTranscriptionResult(fileId)
+        // Trigger refresh of TranscriptionList
+        setListRefreshKey((prev) => prev + 1)
       } else if (status === 'ERROR' || status === 'FAILED') {
         // Stop polling on error
         if (pollingInterval) {
@@ -81,6 +93,8 @@ const AudioRecorder = () => {
           setPollingInterval(null)
         }
         setTranscriptionStatus('ERROR')
+        // Trigger refresh of TranscriptionList
+        setListRefreshKey((prev) => prev + 1)
       }
     } catch (error) {
       console.error('Error polling transcription status:', error)
@@ -297,7 +311,7 @@ const AudioRecorder = () => {
       {/* Transcription List */}
       {sessionFileIds.length > 0 && (
         <div className="mt-4">
-          <TranscriptionList fileIds={sessionFileIds} />
+          <TranscriptionList fileIds={sessionFileIds} key={listRefreshKey} />
         </div>
       )}
 

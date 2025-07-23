@@ -101,7 +101,8 @@ const TranscriptionList = ({ fileIds = [] }) => {
         }
       }
     } else {
-      // Clear polling when no fileIds
+      // Clear transcriptions and polling when no fileIds
+      setTranscriptions([])
       if (pollingInterval) {
         clearInterval(pollingInterval)
         setPollingInterval(null)
