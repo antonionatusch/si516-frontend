@@ -12,16 +12,16 @@ const PatientList = React.lazy(() => import('./views/Patient/PatientList'))
 const DoctorCreate = React.lazy(() => import('./views/Doctor/DoctorCreate'))
 const DoctorList = React.lazy(() => import('./views/Doctor/DoctorList'))
 
-
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
-
 
 // Appointments
 const AppointmentList = React.lazy(() => import('./views/Appointment/AppointmentList'))
 const AppointmentCreate = React.lazy(() => import('./views/Appointment/AppointmentCreate'))
 
+// Transcripcion
+const AudioRecorder = React.lazy(() => import('./views/AudioRecorder/AudioRecorder')) // ajusta la ruta real
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -76,7 +76,11 @@ const routes = [
 
   { path: '/ClinicHistory/ver', name: 'Ver Historiales', element: ClinicHistoryList },
   { path: '/ClinicHistory/nuevo', name: 'Crear Nuevo', element: ClinicHistoryCreate },
-  { path: '/ClinicHistory/detalle/:id', name: 'Detalle de Historial', element: ClinicHistoryDetail },
+  {
+    path: '/ClinicHistory/detalle/:id',
+    name: 'Detalle de Historial',
+    element: ClinicHistoryDetail,
+  },
   { path: '/ClinicHistory/buscar', name: 'Buscar por Paciente', element: ClinicHistorySearch },
 
   //Paciente
@@ -97,6 +101,7 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
+  { path: '/audio/grabar', name: 'Grabar Resumen', element: AudioRecorder },
 ]
 
 export default routes

@@ -60,7 +60,6 @@ const _nav = [
         name: 'Registrar Paciente',
         to: '/Patient/registrar',
       },
-
     ],
   },
 
@@ -92,12 +91,12 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Ver Citas',
-        to: '/Appointments/lista'
+        to: '/Appointments/lista',
       },
       {
         component: CNavItem,
         name: 'Nueva Cita',
-        to: '/Appointments/nueva'
+        to: '/Appointments/nueva',
       },
     ],
   },
@@ -112,12 +111,14 @@ const _nav = [
 
   // 🗣️ Transcripción de Audio
   {
-    component: CNavItem,
-    name: 'Transcripción de Audio',
-    to: '/transcripcion',
+    component: CNavGroup,
+    name: 'Audio',
     icon: <CIcon icon={cilMicrophone} customClassName="nav-icon" />,
+    items: [
+      { component: CNavItem, name: 'Grabar Resumen', to: '/audio/grabar' },
+      { component: CNavItem, name: 'Transcripciones', to: '/transcripcion' }, // tu vista actual
+    ],
   },
-
   {
     component: CNavItem,
     name: 'Mensajes',

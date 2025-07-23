@@ -1,0 +1,47 @@
+.mic-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mic-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #222; // ajusta a tu theme
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.mic-wrapper:hover .mic-circle {
+  box-shadow: 0 0 25px rgba(13, 110, 253, 0.8); // azul CoreUI primary
+  transform: scale(1.05);
+}
+
+.mic-text {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.recording .mic-circle {
+  box-shadow: 0 0 30px 5px rgba(220, 53, 69, 0.9); // rojo danger
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.07);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
