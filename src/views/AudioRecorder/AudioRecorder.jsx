@@ -1,8 +1,17 @@
 // src/views/Audio/AudioRecorder.jsx
 import React, { useEffect, useRef, useState } from 'react'
-import { CCard, CCardBody, CCardHeader, CButton, CProgress, CProgressBar } from '@coreui/react'
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CButton,
+  CProgress,
+  CProgressBar,
+  CSpinner,
+} from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilMicrophone, cilMediaStop, cilTrash } from '@coreui/icons'
+import { cilMicrophone, cilMediaStop, cilTrash, cilCloudUpload } from '@coreui/icons'
+import axios from 'axios'
 
 const MAX_SECONDS = 300 // solo para la barra, 5 min; ajusta o elimina
 
@@ -10,9 +19,11 @@ const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false)
   const [seconds, setSeconds] = useState(0)
   const [audioUrl, setAudioUrl] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   const mediaRecorderRef = useRef(null)
   const chunksRef = useRef([]) // acumulamos los trozos
+  const audioBlobRef = useRef(null) // store the audio blob for upload
 
   // timer
   useEffect(() => {
@@ -35,6 +46,7 @@ const AudioRecorder = () => {
       }
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
+        audioBlobRef.current = blob // store the blob for upload
         setAudioUrl(URL.createObjectURL(blob))
         // aquí luego: mandar blob al backend
       }
@@ -58,6 +70,48 @@ const AudioRecorder = () => {
     setAudioUrl(null)
     setSeconds(0)
     chunksRef.current = []
+    audioBlobRef.current = null
+  }
+
+  const uploadAudio = async () => {
+    if (!audioBlobRef.current) {
+      alert('No hay audio para subir')
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      // Create FormData for file upload
+      const formData = new FormData()
+
+      // Create a File object from the blob
+      const audioFile = new File([audioBlobRef.current], `audio-${Date.now()}.webm`, {
+        type: 'audio/webm',
+      })
+
+      formData.append('file', audioFile)
+
+      // Optional parameters can be added here when available:
+      // formData.append('doctorId', doctorId)
+      // formData.append('patientId', patientId)
+
+      const response = await axios.post('http://localhost:8080/files/audio', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      alert('Audio subido correctamente')
+      console.log('Upload response:', response.data)
+
+      // Optionally reset the recording after successful upload
+      // resetRecording()
+    } catch (error) {
+      console.error('Error al subir audio:', error)
+      alert('Error al subir el audio. Por favor, intente nuevamente.')
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   const progressValue = Math.min((seconds / MAX_SECONDS) * 100, 100)
@@ -110,7 +164,19 @@ const AudioRecorder = () => {
               <CButton color="secondary" size="sm" onClick={resetRecording}>
                 Regrabar
               </CButton>
-              {/* Aquí luego el botón para subir al backend */}
+              <CButton color="primary" size="sm" onClick={uploadAudio} disabled={isUploading}>
+                {isUploading ? (
+                  <>
+                    <CSpinner size="sm" className="me-1" />
+                    Subiendo...
+                  </>
+                ) : (
+                  <>
+                    <CIcon icon={cilCloudUpload} className="me-1" />
+                    Enviar Audio
+                  </>
+                )}
+              </CButton>
             </div>
           </div>
         )}
