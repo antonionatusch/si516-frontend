@@ -3,6 +3,7 @@
 );
 @use '@coreui/chartjs/scss/coreui-chartjs';
 @use 'vendors/simplebar';
+@use 'components/audio-recorder';
 
 body {
   background-color: var(--cui-tertiary-bg);

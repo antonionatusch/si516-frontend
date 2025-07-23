@@ -20,6 +20,9 @@ const Typography = React.lazy(() => import('./views/theme/typography/Typography'
 const AppointmentList = React.lazy(() => import('./views/Appointment/AppointmentList'))
 const AppointmentCreate = React.lazy(() => import('./views/Appointment/AppointmentCreate'))
 
+// Transcripcion
+const AudioRecorder = React.lazy(() => import('./views/AudioRecorder/AudioRecorder')) // ajusta la ruta real
+
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 const Breadcrumbs = React.lazy(() => import('./views/base/breadcrumbs/Breadcrumbs'))
@@ -98,6 +101,7 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
+  { path: '/audio/grabar', name: 'Grabar Resumen', element: AudioRecorder },
 ]
 
 export default routes
