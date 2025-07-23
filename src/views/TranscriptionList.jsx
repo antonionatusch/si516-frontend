@@ -174,6 +174,7 @@ const TranscriptionList = ({ fileIds = [] }) => {
           <CTableHead>
             <CTableRow>
               <CTableHeaderCell>ID de Archivo</CTableHeaderCell>
+              <CTableHeaderCell>Texto en Crudo</CTableHeaderCell>
               <CTableHeaderCell>Paciente</CTableHeaderCell>
               <CTableHeaderCell>Fecha de Transcripción</CTableHeaderCell>
               <CTableHeaderCell>Diagnóstico</CTableHeaderCell>
@@ -186,6 +187,9 @@ const TranscriptionList = ({ fileIds = [] }) => {
               <CTableRow key={transcription.fileId}>
                 <CTableDataCell>
                   <small className="text-muted">{transcription.fileId.substring(0, 8)}...</small>
+                </CTableDataCell>
+                <CTableDataCell>
+                  <small className="text-muted">{transcription.text}</small>
                 </CTableDataCell>
                 <CTableDataCell>
                   {transcription.status === 'success' && transcription.extracted?.patientName
