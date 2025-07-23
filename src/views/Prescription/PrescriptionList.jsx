@@ -25,17 +25,17 @@ const PrescriptionList = () => {
     try {
       setLoading(true)
       const res = await axios.get('http://localhost:8080/clinic-histories')
-
+      console.log(res)
       // Extraer las recetas de las historias clínicas
       const extractedPrescriptions = res.data
         .filter((history) => history.treatment && history.treatment.length > 0)
         .map((history) => ({
           id: history.id,
-          patientId: history.patientId,
-          doctorId: history.doctorId,
+          patientId: history.patientId ?? 'fulanito',
+          doctorId: history.doctorId ?? 'fulanito',
           diagnosis: history.diagnosis,
           treatments: history.treatment,
-          pickup: history.prescription.pickupType,
+          pickup: history.pickup,
           createdAt: history.createdAt,
         }))
 
@@ -52,7 +52,10 @@ const PrescriptionList = () => {
     fetchPrescriptions()
   }, [])
 
+  console.log(prescriptions)
+
   const formatDate = (dateString) => {
+    console.log(dateString)
     if (!dateString) return 'N/A'
     return new Date(dateString).toLocaleDateString('es-ES', {
       year: 'numeric',
@@ -126,7 +129,7 @@ const PrescriptionList = () => {
               prescriptions.map((prescription) => (
                 <CTableRow key={prescription.id}>
                   <CTableDataCell>{prescription.id}</CTableDataCell>
-                  <CTableDataCell>{formatDate(prescription.createdAt)}</CTableDataCell>
+                  <CTableDataCell>{prescription.createdAt}</CTableDataCell>
                   <CTableDataCell>{prescription.diagnosis}</CTableDataCell>
                   <CTableDataCell>
                     {prescription.treatments.length} medicamento(s)
