@@ -22,6 +22,7 @@ const AppointmentCreate = React.lazy(() => import('./views/Appointment/Appointme
 
 // Transcripcion
 const AudioRecorder = React.lazy(() => import('./views/AudioRecorder/AudioRecorder')) // ajusta la ruta real
+const TranscriptionList = React.lazy(() => import('./views/TranscriptionList')) // ajusta la ruta real
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -102,6 +103,7 @@ const routes = [
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
   { path: '/audio/grabar', name: 'Grabar Resumen', element: AudioRecorder },
+  { path: '/transcripcion', name: 'Inspeccionar Transcripcion', element: TranscriptionList },
 ]
 
 export default routes
