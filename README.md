@@ -70,8 +70,11 @@ Este repositorio contiene la interfaz web de **SaludConecta**, un sistema inteli
 
 ## Demo en Video
 
-Aquí se incluirá próximamente un video demostrativo mostrando el funcionamiento de la aplicación y sus principales características.  
-*Placeholder: Video de demostración pendiente de agregar.*
+
+
+https://github.com/user-attachments/assets/34b2035b-7fb5-41ab-a6ed-37d996d35088
+
+
 
 ---
 
