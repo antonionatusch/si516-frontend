@@ -16,10 +16,14 @@ import axios from 'axios'
 
 const ClinicHistoryList = () => {
   const [histories, setHistories] = useState([])
+  const [doctors, setDoctors] = useState([])
+  const [patients, setPatients] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
     axios.get('http://localhost:8080/clinic-histories').then((res) => setHistories(res.data))
+    axios.get('http://localhost:8080/doctors').then((res) => setDoctors(res.data))
+    axios.get('http://localhost:8080/patients').then((res) => setPatients(res.data))
   }, [])
 
   return (
@@ -43,8 +47,12 @@ const ClinicHistoryList = () => {
             {histories.map((h) => (
               <CTableRow key={h.id}>
                 <CTableDataCell>{h.id}</CTableDataCell>
-                <CTableDataCell>{h.patientId}</CTableDataCell>
-                <CTableDataCell>{h.doctorId}</CTableDataCell>
+                <CTableDataCell>
+                  {patients.find((patient) => h.patientId === patient.id).name}
+                </CTableDataCell>
+                <CTableDataCell>
+                  {doctors.find((doctor) => h.doctorId === doctor.id).fullName}
+                </CTableDataCell>
                 <CTableDataCell>{h.visitReason}</CTableDataCell>
                 <CTableDataCell>{h.diagnosis}</CTableDataCell>
                 <CTableDataCell>
