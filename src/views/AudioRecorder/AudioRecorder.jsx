@@ -187,9 +187,8 @@ const AudioRecorder = () => {
 
       formData.append('file', audioFile)
 
-      // Optional parameters can be added here when available:
-      // formData.append('doctorId', doctorId)
-      // formData.append('patientId', patientId)
+      formData.append('doctorId', doctorId)
+      formData.append('patientId', patientId)
 
       const response = await axios.post('http://localhost:8080/files/audio', formData, {
         headers: {
