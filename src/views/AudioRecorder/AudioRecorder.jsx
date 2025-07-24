@@ -86,9 +86,10 @@ const AudioRecorder = () => {
   const findOrCreatePatient = async (patientName) => {
     try {
       // First, try to search for existing patient by name
-      const searchResponse = await axios.get(
-        `http://localhost:8080/patients?name=${encodeURIComponent(patientName)}`,
-      )
+      console.log(patientName)
+      const safeName = encodeURIComponent(patientName.trim())
+      const url = `http://localhost:8080/patients/by-name/${safeName}`
+      const searchResponse = await axios.get(url)
 
       if (searchResponse.data && searchResponse.data.length > 0) {
         // Patient found, return the first match
