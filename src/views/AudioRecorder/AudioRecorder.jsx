@@ -19,6 +19,7 @@ import { cilMicrophone, cilMediaStop, cilTrash, cilCloudUpload, cilArrowRight } 
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import TranscriptionList from '../TranscriptionList'
+import { getDoctorInfo } from '../../services/auth'
 
 const MAX_SECONDS = 300 // solo para la barra, 5 min; ajusta o elimina
 
@@ -41,10 +42,22 @@ const AudioRecorder = () => {
   const [pollingInterval, setPollingInterval] = useState(null)
   const [listRefreshKey, setListRefreshKey] = useState(0)
 
+  // States for doctor and patient IDs
+  const [doctorId, setDoctorId] = useState(null)
+  const [patientId, setPatientId] = useState('68801168944145e7ee020681') // Default patient ID
+
   const navigate = useNavigate()
   const mediaRecorderRef = useRef(null)
   const chunksRef = useRef([]) // acumulamos los trozos
   const audioBlobRef = useRef(null) // store the audio blob for upload
+
+  // Get doctorId from localStorage on component mount
+  useEffect(() => {
+    const doctorInfo = getDoctorInfo()
+    if (doctorInfo && doctorInfo.doctorId) {
+      setDoctorId(doctorInfo.doctorId)
+    }
+  }, [])
 
   // timer
   useEffect(() => {
@@ -68,6 +81,35 @@ const AudioRecorder = () => {
   useEffect(() => {
     localStorage.setItem('sessionFileIds', JSON.stringify(sessionFileIds))
   }, [sessionFileIds])
+
+  // Function to find or create patient by name
+  const findOrCreatePatient = async (patientName) => {
+    try {
+      // First, try to search for existing patient by name
+      const searchResponse = await axios.get(
+        `http://localhost:8080/patients?name=${encodeURIComponent(patientName)}`,
+      )
+
+      if (searchResponse.data && searchResponse.data.length > 0) {
+        // Patient found, return the first match
+        return searchResponse.data[0].patientId || searchResponse.data[0].id
+      } else {
+        // Patient not found, create new patient
+        const createResponse = await axios.post('http://localhost:8080/patients', {
+          name: patientName,
+          dob: new Date().toISOString().split('T')[0], // Default to today's date
+          email: `${patientName.replace(/\s+/g, '').toLowerCase()}@example.com`, // Generate email
+          phone: '000-000-0000', // Default phone
+        })
+
+        return createResponse.data.patientId || createResponse.data.id
+      }
+    } catch (error) {
+      console.error('Error finding/creating patient:', error)
+      // Return default patient ID on error
+      return '68801168944145e7ee020681'
+    }
+  }
 
   // Polling function for transcription status
   const pollTranscriptionStatus = async (fileId) => {
@@ -107,6 +149,17 @@ const AudioRecorder = () => {
     try {
       const response = await axios.get(`http://25.51.135.130:8001/transcribe/result/${fileId}`)
       setTranscriptionResult(response.data)
+
+      // Check if we have a patient name in the transcription result
+      if (response.data && response.data.extracted && response.data.extracted.patientName) {
+        const patientName = response.data.extracted.patientName
+        console.log('Found patient name in transcription:', patientName)
+
+        // Find or create patient and update patientId
+        const foundPatientId = await findOrCreatePatient(patientName)
+        setPatientId(foundPatientId)
+        console.log('Set patientId to:', foundPatientId)
+      }
     } catch (error) {
       console.error('Error fetching transcription result:', error)
       setTranscriptionStatus('ERROR')
@@ -175,6 +228,11 @@ const AudioRecorder = () => {
       return
     }
 
+    if (!doctorId) {
+      alert('Doctor ID no disponible. Por favor, vuelva a iniciar sesión.')
+      return
+    }
+
     setIsUploading(true)
     try {
       // Create FormData for file upload
@@ -189,6 +247,8 @@ const AudioRecorder = () => {
 
       formData.append('doctorId', doctorId)
       formData.append('patientId', patientId)
+
+      console.log('Uploading audio with doctorId:', doctorId, 'and patientId:', patientId)
 
       const response = await axios.post('http://localhost:8080/files/audio', formData, {
         headers: {
